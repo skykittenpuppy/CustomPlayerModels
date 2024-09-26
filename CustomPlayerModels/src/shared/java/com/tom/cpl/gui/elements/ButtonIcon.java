@@ -4,9 +4,8 @@ import com.tom.cpl.gui.IGui;
 import com.tom.cpl.gui.MouseEvent;
 
 public class ButtonIcon extends Button {
-	private String name;
-	private int u, v;
-	private boolean tintIcon;
+	protected int u, v;
+	protected boolean tintIcon;
 
 	public ButtonIcon(IGui gui, String name, int u, int v, Runnable action) {
 		super(gui, "", action);
@@ -25,6 +24,8 @@ public class ButtonIcon extends Button {
 
 	@Override
 	public void draw(MouseEvent event, float partialTicks) {
+		gui.drawButton(this, event, partialTicks);
+/*
 		int bgColor = gui.getColors().button_fill;
 		int color = gui.getColors().button_text_color;
 		if(!enabled) {
@@ -41,7 +42,7 @@ public class ButtonIcon extends Button {
 		if(tintIcon)
 			gui.drawTexture(bounds.x+2, bounds.y+2, bounds.w-4, bounds.h-4, u, v, name, color);
 		else
-			gui.drawTexture(bounds.x+2, bounds.y+2, bounds.w-4, bounds.h-4, u, v, name);
+			gui.drawTexture(bounds.x+2, bounds.y+2, bounds.w-4, bounds.h-4, u, v, name);*/
 	}
 
 	public void setU(int u) {
@@ -59,4 +60,6 @@ public class ButtonIcon extends Button {
 	public int getV() {
 		return v;
 	}
+
+	public boolean getTintIcon() {return tintIcon;}
 }

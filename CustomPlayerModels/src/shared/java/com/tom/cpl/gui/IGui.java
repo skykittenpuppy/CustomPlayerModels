@@ -14,15 +14,12 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.Sets;
 
-import com.tom.cpl.gui.elements.Button;
-import com.tom.cpl.gui.elements.ConfirmPopup;
-import com.tom.cpl.gui.elements.GuiElement;
-import com.tom.cpl.gui.elements.MessagePopup;
-import com.tom.cpl.gui.elements.PopupPanel;
+import com.tom.cpl.gui.elements.*;
 import com.tom.cpl.math.Box;
 import com.tom.cpl.math.Vec2i;
 import com.tom.cpl.text.IText;
 import com.tom.cpm.shared.MinecraftClientAccess;
+import com.tom.cpm.shared.editor.gui.popup.ColorButton;
 import com.tom.cpm.shared.util.ErrorLog;
 import com.tom.cpm.shared.util.ErrorLog.LogLevel;
 import com.tom.cpm.shared.util.Log;
@@ -273,5 +270,133 @@ public interface IGui extends UI {
 	default void displayConfirm(String title, String msg, Runnable ok, Runnable cancel, String okTxt,
 			String cancelTxt) {
 		getFrame().openPopup(new ConfirmPopup(getFrame(), title, msg, ok, cancel, okTxt, cancelTxt));
+	}
+
+	/*skykittenpuppy functions*/
+	default <T extends Button> void drawButton(T self, MouseEvent event, float partialTicks){
+		String name = self.getText();
+		boolean enabled = self.isEnabled();
+		boolean selected = false;
+		if (self instanceof ButtonIconToggle) selected = ((ButtonIconToggle) self).isSelected();
+		Box bounds = self.getBounds();
+		Tooltip tooltip = self.getTooltip();
+
+		int bgColor = getColors().button_fill;
+		int color = getColors().button_text_color;
+		if(selected) {
+			color = getColors().button_text_disabled;
+			bgColor = getColors().button_disabled;
+		} else if(!enabled) {
+			color = getColors().button_text_disabled;
+			bgColor = getColors().button_disabled;
+		} else if(event.isHovered(bounds)) {
+			color = getColors().button_text_hover;
+			bgColor = getColors().button_hover;
+		}
+		if(event.isHovered(bounds) && tooltip != null) tooltip.set();
+		bgColor = 0xffff00ff;
+		drawBox(bounds.x, bounds.y, bounds.w, bounds.h, getColors().button_border);
+		drawBox(bounds.x+1, bounds.y+1, bounds.w-2, bounds.h-2, bgColor);
+
+		if (self instanceof ButtonIcon) {
+			boolean tintIcon = ((ButtonIcon) self).getTintIcon();
+			int u = ((ButtonIcon) self).getU();
+			int v = ((ButtonIcon) self).getV();
+
+			if (tintIcon)
+				drawTexture(bounds.x + 2, bounds.y + 2, bounds.w - 4, bounds.h - 4, u, v, name, color);
+			else
+				drawTexture(bounds.x + 2, bounds.y + 2, bounds.w - 4, bounds.h - 4, u, v, name);
+		} else {
+			int w = textWidth(name);
+			drawText(bounds.x + bounds.w / 2 - w / 2, bounds.y + bounds.h / 2 - 4, name, color);
+		}
+	}
+	default void drawCheckbox(Checkbox self, MouseEvent event, float partialTicks){
+		String name = self.getText();
+		boolean enabled = self.isEnabled();
+		Box bounds = self.getBounds();
+		Tooltip tooltip = self.getTooltip();
+		boolean selected = self.isSelected();
+
+		int bgColor = getColors().button_fill;
+		int color = getColors().button_text_color;
+		if(!enabled) {
+			color = getColors().button_text_disabled;
+			bgColor = getColors().button_disabled;
+		} else if(event.isHovered(bounds)) {
+			color = getColors().button_text_hover;
+			bgColor = getColors().button_hover;
+		}
+		if(event.isHovered(bounds) && tooltip != null) tooltip.set();
+		bgColor = 0xffff00ff;
+		drawBox(bounds.x, bounds.y, bounds.h, bounds.h, getColors().button_border);
+		drawBox(bounds.x+1, bounds.y+1, bounds.h-2, bounds.h-2, bgColor);
+		drawText(bounds.x + bounds.h + 3, bounds.y + bounds.h / 2 - 4, name, color);
+		if(selected) {
+			drawTexture(bounds.x + 2, bounds.y + 2, 16, 16, 32, 0, "editor", color);
+		}
+	}
+	default void drawColourField(ColorButton self, MouseEvent event, float partialTicks){
+		String name = self.getText();
+		boolean enabled = self.isEnabled();
+		Box bounds = self.getBounds();
+		Tooltip tooltip = self.getTooltip();
+
+		int bgColor = getColors().button_fill;
+		int color = getColors().button_text_color;
+		if(!enabled) {
+			color = getColors().button_text_disabled;
+			bgColor = getColors().button_disabled;
+		} else if(event.isHovered(bounds)) {
+			color = getColors().button_text_hover;
+			bgColor = getColors().button_hover;
+		}
+		if(event.isHovered(bounds) && tooltip != null)
+			tooltip.set();
+		bgColor = 0xffff00ff;
+		drawBox(bounds.x, bounds.y, bounds.w, bounds.h, getColors().button_border);
+		drawBox(bounds.x+1, bounds.y+1, bounds.w-2, bounds.h-2, bgColor);
+
+		if (name == null || name.isEmpty()) {
+			drawBox(bounds.x+3, bounds.y+3, bounds.w-6, bounds.h-6, 0xff000000 | self.getColor());
+		} else {
+			int w = textWidth(name);
+			drawText(bounds.x + bounds.h-8 + (bounds.w - bounds.h-8) / 2 - w / 2, bounds.y + bounds.h / 2 - 4, name, color);
+
+			drawBox(bounds.x+3, bounds.y+3, bounds.h-6, bounds.h-6, getColors().button_border);
+			drawBox(bounds.x+4, bounds.y+4, bounds.h-8, bounds.h-8, 0xff000000 | self.getColor());
+		}
+	}
+	default void drawSlider(){
+
+	}
+	default void drawTab(){
+
+	}
+	default void drawTextField(TextField self, TextField.ITextField field, MouseEvent event, float partialTicks){
+		Box bounds = self.getBounds();
+		boolean enabled = self.isEnabled();
+
+		int bgColor = self.getBackgroundColor();
+		if(!enabled) {
+			bgColor = getColors().button_disabled;
+		}
+		bgColor = 0xffff00ff;
+		drawBox(bounds.x, bounds.y, bounds.w, bounds.h, getColors().button_border);
+		drawBox(bounds.x+1, bounds.y+1, bounds.w-2, bounds.h-2, bgColor);
+		field.draw(event.x, event.y, partialTicks, bounds);
+	}
+	default void drawValueField(){
+
+	}
+	default void drawXValueField(){
+
+	}
+	default void drawYValueField(){
+
+	}
+	default void drawZValueField(){
+
 	}
 }
