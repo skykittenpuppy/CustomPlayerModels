@@ -766,6 +766,6 @@ public class GuiImpl extends Screen implements IGui {
 	public <T extends com.tom.cpl.gui.elements.Button> void drawButton(T self, MouseEvent event, float partialTicks) {
 		Box bounds = self.getBounds();
 
-		drawBox(bounds.x, bounds.y, bounds.w, bounds.h, 0xff11ffff);
+		drawBox(bounds.x, bounds.y, bounds.w, bounds.h, 0xff00ffff);
 	}
 }
